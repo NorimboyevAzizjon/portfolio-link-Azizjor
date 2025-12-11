@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 
 const translations = {
@@ -21,6 +21,13 @@ const translations = {
     instagram: "Instagram",
     facebook: "Facebook",
     youtube: "YouTube",
+    twitter: "Twitter",
+    whatsapp: "WhatsApp",
+    discord: "Discord",
+    codepen: "CodePen",
+    dribbble: "Dribbble",
+    behance: "Behance",
+    tiktok: "TikTok",
     emailSub: "Elektron pochta",
     phoneSub: "Mobil telefon",
     locationMain: "O'zbekiston",
@@ -43,6 +50,14 @@ const translations = {
     calling: "📞 Qo'ng'iroq qilinmoqda...",
     locationAlert: "🗺️ O'zbekiston xaritasi ochilmoqda...",
     messageSent: "✅ Xabaringiz muvaffaqiyatli yuborildi!",
+    viewAll: "Barchasini ko'rish",
+    connectWithMe: "Men bilan bog'laning",
+    skills: "Ko'nikmalar",
+    experience: "Tajriba",
+    projects: "Loyihalar",
+    followers: "Obunachilar",
+    following: "Kuzatilmoqda",
+    posts: "Postlar",
   },
   ru: {
     title: "Frontend Разработчик",
@@ -63,6 +78,13 @@ const translations = {
     instagram: "Инстаграм",
     facebook: "Фейсбук",
     youtube: "Ютуб",
+    twitter: "Твиттер",
+    whatsapp: "Ватсап",
+    discord: "Дискорд",
+    codepen: "КодПен",
+    dribbble: "Дриббл",
+    behance: "Биханс",
+    tiktok: "ТикТок",
     emailSub: "Электронная почта",
     phoneSub: "Мобильный телефон",
     locationMain: "Узбекистан",
@@ -85,6 +107,14 @@ const translations = {
     calling: "📞 Звонок осуществляется...",
     locationAlert: "🗺️ Открывается карта Узбекистана...",
     messageSent: "✅ Ваше сообщение успешно отправлено!",
+    viewAll: "Посмотреть все",
+    connectWithMe: "Связаться со мной",
+    skills: "Навыки",
+    experience: "Опыт",
+    projects: "Проекты",
+    followers: "Подписчики",
+    following: "Подписки",
+    posts: "Посты",
   },
   en: {
     title: "Frontend Developer",
@@ -105,6 +135,13 @@ const translations = {
     instagram: "Instagram",
     facebook: "Facebook",
     youtube: "YouTube",
+    twitter: "Twitter",
+    whatsapp: "WhatsApp",
+    discord: "Discord",
+    codepen: "CodePen",
+    dribbble: "Dribbble",
+    behance: "Behance",
+    tiktok: "TikTok",
     emailSub: "Email",
     phoneSub: "Mobile Phone",
     locationMain: "Uzbekistan",
@@ -127,6 +164,14 @@ const translations = {
     calling: "📞 Calling...",
     locationAlert: "🗺️ Opening Uzbekistan map...",
     messageSent: "✅ Your message has been sent successfully!",
+    viewAll: "View All",
+    connectWithMe: "Connect with Me",
+    skills: "Skills",
+    experience: "Experience",
+    projects: "Projects",
+    followers: "Followers",
+    following: "Following",
+    posts: "Posts",
   },
 };
 
@@ -135,13 +180,189 @@ function App() {
   const [language, setLanguage] = useState('uz');
   const [showInfoPanel, setShowInfoPanel] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [activeCategory, setActiveCategory] = useState('all');
   const [notification, setNotification] = useState(null);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: ''
-  });
+  const socialGridRef = useRef(null);
+
+  // Barcha ijtimoiy tarmoqlar
+  const socialLinks = [
+    {
+      id: 'portfolio',
+      name: 'Portfolio',
+      icon: 'fas fa-briefcase',
+      color: '#6366f1',
+      url: 'https://azizjondev-alpha.vercel.app/',
+      description: 'My Projects',
+      bgColor: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+      category: 'portfolio',
+      stats: { projects: 24 }
+    },
+    {
+      id: 'github',
+      name: 'GitHub',
+      icon: 'fab fa-github',
+      color: '#333333',
+      url: 'https://github.com/NorimboyevAzizjon',
+      description: 'Code & Repositories',
+      bgColor: 'linear-gradient(135deg, #333333 0%, #666666 100%)',
+      category: 'coding',
+      stats: { repos: 47, stars: 128 }
+    },
+    {
+      id: 'linkedin',
+      name: 'LinkedIn',
+      icon: 'fab fa-linkedin',
+      color: '#0077b5',
+      url: 'https://www.linkedin.com/in/azizjon-norimboyev-dev',
+      description: 'Professional Network',
+      bgColor: 'linear-gradient(135deg, #0077b5 0%, #00a0dc 100%)',
+      category: 'professional',
+      stats: { connections: 500 }
+    },
+    {
+      id: 'telegram',
+      name: 'Telegram',
+      icon: 'fab fa-telegram',
+      color: '#0088cc',
+      url: 'https://t.me/AzizjonNorimboyev',
+      description: 'Direct Messages',
+      bgColor: 'linear-gradient(135deg, #0088cc 0%, #33b7f6 100%)',
+      category: 'messaging',
+      stats: { subscribers: 150 }
+    },
+    {
+      id: 'instagram',
+      name: 'Instagram',
+      icon: 'fab fa-instagram',
+      color: '#e1306c',
+      url: 'https://instagram.com/azizjondev_',
+      description: 'Photos & Stories',
+      bgColor: 'linear-gradient(135deg, #e1306c 0%, #f77737 100%)',
+      category: 'social',
+      stats: { followers: 1200, posts: 86 }
+    },
+    {
+      id: 'facebook',
+      name: 'Facebook',
+      icon: 'fab fa-facebook',
+      color: '#1877f2',
+      url: 'https://facebook.com/azizjondev_',
+      description: 'Social Network',
+      bgColor: 'linear-gradient(135deg, #1877f2 0%, #3b5998 100%)',
+      category: 'social',
+      stats: { friends: 850 }
+    },
+    {
+      id: 'youtube',
+      name: 'YouTube',
+      icon: 'fab fa-youtube',
+      color: '#ff0000',
+      url: 'https://www.youtube.com/channel/UCW37ULgmMZpaMD3uc1B6HiA',
+      description: 'Video Tutorials',
+      bgColor: 'linear-gradient(135deg, #ff0000 0%, #cc0000 100%)',
+      category: 'video',
+      stats: { subscribers: 320, videos: 15 }
+    },
+    {
+      id: 'whatsapp',
+      name: 'WhatsApp',
+      icon: 'fab fa-whatsapp',
+      color: '#25d366',
+      url: 'https://wa.me/998933642030',
+      description: 'Instant Chat',
+      bgColor: 'linear-gradient(135deg, #25d366 0%, #128c7e 100%)',
+      category: 'messaging',
+      stats: { online: true }
+    },
+    {
+      id: 'twitter',
+      name: 'Twitter',
+      icon: 'fab fa-twitter',
+      color: '#1da1f2',
+      url: 'https://twitter.com',
+      description: 'Thoughts & News',
+      bgColor: 'linear-gradient(135deg, #1da1f2 0%, #1a91da 100%)',
+      category: 'social',
+      stats: { tweets: 240, followers: 350 }
+    },
+    {
+      id: 'discord',
+      name: 'Discord',
+      icon: 'fab fa-discord',
+      color: '#7289da',
+      url: 'https://discord.com',
+      description: 'Community & Chat',
+      bgColor: 'linear-gradient(135deg, #7289da 0%, #99aab5 100%)',
+      category: 'community',
+      stats: { servers: 5 }
+    },
+    {
+      id: 'codepen',
+      name: 'CodePen',
+      icon: 'fab fa-codepen',
+      color: '#000000',
+      url: 'https://codepen.io',
+      description: 'Code Playground',
+      bgColor: 'linear-gradient(135deg, #000000 0%, #333333 100%)',
+      category: 'coding',
+      stats: { pens: 12 }
+    },
+    {
+      id: 'dribbble',
+      name: 'Dribbble',
+      icon: 'fab fa-dribbble',
+      color: '#ea4c89',
+      url: 'https://dribbble.com',
+      description: 'Design Showcase',
+      bgColor: 'linear-gradient(135deg, #ea4c89 0%, #c32361 100%)',
+      category: 'design',
+      stats: { shots: 8, likes: 240 }
+    },
+    {
+      id: 'behance',
+      name: 'Behance',
+      icon: 'fab fa-behance',
+      color: '#1769ff',
+      url: 'https://behance.net',
+      description: 'Creative Portfolio',
+      bgColor: 'linear-gradient(135deg, #1769ff 0%, #0057ff 100%)',
+      category: 'design',
+      stats: { projects: 6 }
+    },
+    {
+      id: 'tiktok',
+      name: 'TikTok',
+      icon: 'fab fa-tiktok',
+      color: '#000000',
+      url: 'https://tiktok.com',
+      description: 'Short Videos',
+      bgColor: 'linear-gradient(135deg, #000000 0%, #333333 100%)',
+      category: 'video',
+      stats: { followers: 5000, likes: 25000 }
+    },
+    {
+      id: 'reddit',
+      name: 'Reddit',
+      icon: 'fab fa-reddit',
+      color: '#ff4500',
+      url: 'https://reddit.com',
+      description: 'Communities',
+      bgColor: 'linear-gradient(135deg, #ff4500 0%, #ff5700 100%)',
+      category: 'community',
+      stats: { karma: 1200 }
+    },
+    {
+      id: 'spotify',
+      name: 'Spotify',
+      icon: 'fab fa-spotify',
+      color: '#1db954',
+      url: 'https://open.spotify.com',
+      description: 'Music Playlists',
+      bgColor: 'linear-gradient(135deg, #1db954 0%, #1ed760 100%)',
+      category: 'entertainment',
+      stats: { playlists: 8 }
+    }
+  ];
 
   const userData = {
     name: "Azizjon Norimboyev",
@@ -149,16 +370,26 @@ function App() {
     phone: "+998933642030",
     location: "O'zbekiston",
     locationUrl: "https://www.google.com/maps/place/Uzbekistan",
-    portfolioUrl: "https://azizjondev-alpha.vercel.app/",
-    links: {
-      github: "https://github.com/NorimboyevAzizjon",
-      linkedin: "https://www.linkedin.com/in/azizjon-norimboyev-dev",
-      telegram: "https://t.me/AzizjonNorimboyev",
-      instagram: "https://instagram.com/azizjondev_",
-      facebook: "https://facebook.com/azizjondev_",
-      youtube: "https://www.youtube.com/channel/UCW37ULgmMZpaMD3uc1B6HiA",
-    },
+    stats: {
+      experience: "2+ Years",
+      projects: "24+",
+      clients: "15+",
+      skills: "12+"
+    }
   };
+
+  const categories = [
+    { id: 'all', name: 'All', icon: 'fas fa-globe', count: socialLinks.length },
+    { id: 'coding', name: 'Coding', icon: 'fas fa-code', count: socialLinks.filter(s => s.category === 'coding').length },
+    { id: 'social', name: 'Social', icon: 'fas fa-users', count: socialLinks.filter(s => s.category === 'social').length },
+    { id: 'design', name: 'Design', icon: 'fas fa-paint-brush', count: socialLinks.filter(s => s.category === 'design').length },
+    { id: 'messaging', name: 'Messaging', icon: 'fas fa-comments', count: socialLinks.filter(s => s.category === 'messaging').length },
+    { id: 'video', name: 'Video', icon: 'fas fa-video', count: socialLinks.filter(s => s.category === 'video').length }
+  ];
+
+  const filteredLinks = activeCategory === 'all' 
+    ? socialLinks 
+    : socialLinks.filter(link => link.category === activeCategory);
 
   const t = translations[language] || translations['uz'];
 
@@ -169,17 +400,13 @@ function App() {
 
   const toggleTheme = () => {
     setDarkTheme(!darkTheme);
-    showNotification(darkTheme ? "Yorug' tema yoqildi" : "Qorong'u tema yoqildi", "success");
+    showNotification(darkTheme ? "☀️ Yorug' tema yoqildi" : "🌙 Qorong'u tema yoqildi", "success");
   };
 
   const changeLanguage = (lang) => {
     setLanguage(lang);
-    showNotification(
-      lang === 'uz' ? "O'zbek tiliga o'zgartirildi" : 
-      lang === 'ru' ? "Русский язык выбран" : 
-      "English language selected", 
-      "success"
-    );
+    const langNames = { uz: "O'zbek", ru: "Русский", en: "English" };
+    showNotification(`🌐 ${langNames[lang]} tiliga o'zgartirildi`, "success");
   };
 
   const sendEmail = () => {
@@ -199,277 +426,400 @@ function App() {
     }, 1000);
   };
 
-  const openPortfolio = () => {
-    window.open(userData.portfolioUrl, '_blank');
-    showNotification(t.portfolioAlert, "success");
-  };
-
-  const handleInputChange = (e) => {
-    const { id, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [id]: value
-    }));
+  const openLink = (url, name) => {
+    if (url === '#' || url === '') {
+      showNotification(`🚧 ${name} tez orada qo'shiladi!`, "warning");
+    } else {
+      window.open(url, '_blank');
+      showNotification(`🔗 ${name} ochildi!`, "success");
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     showNotification(t.messageSent, "success");
-    setFormData({ name: '', email: '', subject: '', message: '' });
     setShowModal(false);
   };
 
   useEffect(() => {
-    document.title = `Azizjon Norimboyev - ${t.title}`;
+    document.title = `Azizjon Norimboyev | ${t.title}`;
+    
+    // Parallax effect for background
+    const handleMouseMove = (e) => {
+      const moveX = (e.clientX * -0.01);
+      const moveY = (e.clientY * -0.01);
+      document.documentElement.style.setProperty('--mouse-x', `${moveX}px`);
+      document.documentElement.style.setProperty('--mouse-y', `${moveY}px`);
+    };
+    
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [t.title]);
 
   return (
     <div className={`app ${darkTheme ? 'dark-theme' : ''}`}>
-      <div className="container">
-        {/* Profile Section */}
-        <div className="profile-section">
-          <div className="profile-img-container">
-            <div className="profile-img">
-              <img
-                src="/images/Norimboyev__Azizjon.JPG"
-                alt="Azizjon Norimboyev"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = "https://via.placeholder.com/160x200/667eea/ffffff?text=AZ";
-                }}
-              />
+      {/* Animated Background */}
+      <div className="animated-bg">
+        <div className="particle"></div>
+        <div className="particle"></div>
+        <div className="particle"></div>
+        <div className="particle"></div>
+        <div className="particle"></div>
+      </div>
+
+      {/* Main Container */}
+      <div className="main-container">
+        {/* Header */}
+        <header className="header">
+          <div className="header-content">
+            <div className="logo">
+              <i className="fas fa-code"></i>
+              <span className="logo-text">AzizjonDev</span>
+            </div>
+            
+            <div className="header-actions">
+              <div className="theme-switcher" onClick={toggleTheme}>
+                <div className={`switch-track ${darkTheme ? 'dark' : ''}`}>
+                  <div className="switch-thumb">
+                    <i className={`fas ${darkTheme ? 'fa-sun' : 'fa-moon'}`}></i>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="language-selector">
+                {['uz', 'ru', 'en'].map((lang) => (
+                  <button
+                    key={lang}
+                    className={`lang-btn ${language === lang ? 'active' : ''}`}
+                    onClick={() => changeLanguage(lang)}
+                    title={lang === 'uz' ? "O'zbek" : lang === 'ru' ? "Русский" : "English"}
+                  >
+                    {lang.toUpperCase()}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
-          <h1 className="name">{userData.name}</h1>
-          <div className="title">
-            <i className="fas fa-laptop-code"></i>
-            <span className="title-text">{t.title}</span>
-          </div>
-        </div>
+        </header>
 
-        {/* Controls */}
-        <div className="controls">
-          <button 
-            className={`extra-btn ${showInfoPanel ? 'playing' : ''}`} 
-            onClick={() => setShowInfoPanel(!showInfoPanel)}
-          >
-            <i className="fas fa-info-circle"></i>
-            <span className="extra-text">{t.extra}</span>
-          </button>
-
-          <button className="theme-btn" onClick={toggleTheme}>
-            <i className={`fas ${darkTheme ? 'fa-sun' : 'fa-moon'}`}></i>
-            <span className="theme-text">{t.theme}</span>
-          </button>
-
-          <div className="language-buttons">
-            {['uz', 'ru', 'en'].map((lang) => (
-              <button
-                key={lang}
-                className={`language-btn ${language === lang ? 'active' : ''}`}
-                onClick={() => changeLanguage(lang)}
-              >
-                {lang.toUpperCase()}
+        {/* Profile Section */}
+        <section className="profile-section">
+          <div className="profile-card">
+            <div className="avatar-container">
+              <div className="avatar-wrapper">
+                <img
+                  src="/images/Norimboyev__Azizjon.JPG"
+                  alt="Azizjon Norimboyev"
+                  className="avatar"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face";
+                  }}
+                />
+                <div className="avatar-status online"></div>
+                <div className="avatar-ring"></div>
+              </div>
+              
+              <div className="profile-info">
+                <h1 className="profile-name">{userData.name}</h1>
+                <p className="profile-title">
+                  <i className="fas fa-laptop-code"></i>
+                  {t.title}
+                </p>
+                <p className="profile-location">
+                  <i className="fas fa-map-marker-alt"></i>
+                  {t.locationMain}
+                </p>
+              </div>
+            </div>
+            
+            <div className="profile-stats">
+              <div className="stat">
+                <div className="stat-value">{userData.stats.experience}</div>
+                <div className="stat-label">{t.experience}</div>
+              </div>
+              <div className="stat">
+                <div className="stat-value">{userData.stats.projects}</div>
+                <div className="stat-label">{t.projects}</div>
+              </div>
+              <div className="stat">
+                <div className="stat-value">{userData.stats.clients}</div>
+                <div className="stat-label">Mijozlar</div>
+              </div>
+              <div className="stat">
+                <div className="stat-value">{userData.stats.skills}</div>
+                <div className="stat-label">{t.skills}</div>
+              </div>
+            </div>
+            
+            <div className="profile-actions">
+              <button className="btn-primary" onClick={() => setShowInfoPanel(!showInfoPanel)}>
+                <i className="fas fa-user"></i>
+                {t.extra}
               </button>
-            ))}
+              <button className="btn-secondary" onClick={() => setShowModal(true)}>
+                <i className="fas fa-envelope"></i>
+                {t.contactBtn}
+              </button>
+            </div>
           </div>
-        </div>
+        </section>
 
         {/* Info Panel */}
         {showInfoPanel && (
-          <div className="info-panel show">
-            <div className="info-section">
-              <h3>
-                <i className="fas fa-user"></i> {t.aboutTitle}
-              </h3>
-              <p>{t.aboutText}</p>
+          <section className="info-section">
+            <div className="info-grid">
+              <div className="info-card">
+                <h3 className="info-title">
+                  <i className="fas fa-user-graduate"></i>
+                  {t.aboutTitle}
+                </h3>
+                <p className="info-text">{t.aboutText}</p>
+              </div>
+              
+              <div className="info-card">
+                <h3 className="info-title">
+                  <i className="fas fa-university"></i>
+                  {t.educationTitle}
+                </h3>
+                <ul className="education-list">
+                  <li>
+                    <i className="fas fa-graduation-cap"></i>
+                    <strong>TATU</strong> - {t.tatu}
+                  </li>
+                  <li>
+                    <i className="fas fa-book"></i>
+                    <strong>Najot Ta'lim</strong> - {t.najot}
+                  </li>
+                  <li>
+                    <i className="fas fa-laptop"></i>
+                    <strong>MohirDev</strong> - {t.mohir}
+                  </li>
+                </ul>
+              </div>
             </div>
-            <div className="info-section">
-              <h3>
-                <i className="fas fa-graduation-cap"></i> {t.educationTitle}
-              </h3>
-              <p><strong>TATU</strong> - {t.tatu}</p>
-              <p><strong>Najot Ta'lim</strong> - {t.najot}</p>
-              <p><strong>MohirDev</strong> - {t.mohir}</p>
-              <p>{t.educationText}</p>
-            </div>
-          </div>
+          </section>
         )}
 
-        {/* Social Links */}
-        <div className="social-links">
-          <button className="social-btn portfolio" onClick={openPortfolio}>
-            <i className="fas fa-briefcase social-icon"></i>
-            <span className="portfolio-text">{t.portfolio}</span>
-          </button>
-          
-          <a href={userData.links.github} target="_blank" rel="noopener noreferrer" className="social-btn github">
-            <i className="fab fa-github social-icon"></i>
-            <span className="github-text">{t.github}</span>
-          </a>
-          
-          <a href={userData.links.linkedin} target="_blank" rel="noopener noreferrer" className="social-btn linkedin">
-            <i className="fab fa-linkedin-in social-icon"></i>
-            <span className="linkedin-text">{t.linkedin}</span>
-          </a>
-          
-          <a href={userData.links.telegram} target="_blank" rel="noopener noreferrer" className="social-btn telegram">
-            <i className="fab fa-telegram social-icon"></i>
-            <span className="telegram-text">{t.telegram}</span>
-          </a>
-          
-          <a href={userData.links.instagram} target="_blank" rel="noopener noreferrer" className="social-btn instagram">
-            <i className="fab fa-instagram social-icon"></i>
-            <span className="instagram-text">{t.instagram}</span>
-          </a>
-          
-          <a href={userData.links.facebook} target="_blank" rel="noopener noreferrer" className="social-btn facebook">
-            <i className="fab fa-facebook-f social-icon"></i>
-            <span className="facebook-text">{t.facebook}</span>
-          </a>
-          
-          <a href={userData.links.youtube} target="_blank" rel="noopener noreferrer" className="social-btn youtube">
-            <i className="fab fa-youtube social-icon"></i>
-            <span className="youtube-text">{t.youtube}</span>
-          </a>
-        </div>
-
-        {/* Contact Info */}
-        <div className="contact-info">
-          <div className="contact-item">
-            <div className="contact-content">
-              <i className="fas fa-envelope"></i>
-              <div className="contact-text">
-                <div className="contact-main">{userData.email}</div>
-                <div className="contact-sub email-sub">{t.emailSub}</div>
-              </div>
-            </div>
-            <div className="contact-buttons">
-              <button className="contact-btn email" onClick={sendEmail}>
-                <i className="fas fa-paper-plane"></i>
-                <span className="email-btn-text">{t.emailBtn}</span>
-              </button>
-            </div>
+        {/* Social Links Section */}
+        <section className="social-section">
+          <div className="section-header">
+            <h2 className="section-title">
+              <i className="fas fa-share-alt"></i>
+              {t.connectWithMe}
+            </h2>
+            <p className="section-subtitle">Barcha ijtimoiy tarmoqlarim</p>
           </div>
+          
+          {/* Categories */}
+          <div className="categories">
+            {categories.map(category => (
+              <button
+                key={category.id}
+                className={`category-btn ${activeCategory === category.id ? 'active' : ''}`}
+                onClick={() => setActiveCategory(category.id)}
+              >
+                <i className={category.icon}></i>
+                <span>{category.name}</span>
+                <span className="category-count">{category.count}</span>
+              </button>
+            ))}
+          </div>
+          
+          {/* Social Grid */}
+          <div className="social-grid" ref={socialGridRef}>
+            {filteredLinks.map((link) => (
+              <div
+                key={link.id}
+                className="social-card"
+                style={{ '--card-color': link.color }}
+                onClick={() => openLink(link.url, link.name)}
+              >
+                <div className="card-header">
+                  <div className="card-icon" style={{ background: link.bgColor }}>
+                    <i className={link.icon}></i>
+                  </div>
+                  <div className="card-title">
+                    <h3>{t[link.id] || link.name}</h3>
+                    <p>{link.description}</p>
+                  </div>
+                </div>
+                
+                <div className="card-stats">
+                  {Object.entries(link.stats || {}).map(([key, value]) => (
+                    <div key={key} className="stat-item">
+                      <span className="stat-value">
+                        {typeof value === 'boolean' ? 
+                          (value ? <i className="fas fa-circle online"></i> : <i className="fas fa-circle offline"></i>) 
+                          : value}
+                      </span>
+                      <span className="stat-key">
+                        {key === 'projects' && t.projects}
+                        {key === 'followers' && t.followers}
+                        {key === 'posts' && t.posts}
+                        {key === 'repos' && 'Repos'}
+                        {key === 'stars' && 'Stars'}
+                        {key === 'connections' && 'Connections'}
+                        {key === 'subscribers' && 'Subscribers'}
+                        {key === 'friends' && 'Friends'}
+                        {key === 'videos' && 'Videos'}
+                        {key === 'online' && 'Status'}
+                        {key === 'tweets' && 'Tweets'}
+                        {key === 'servers' && 'Servers'}
+                        {key === 'pens' && 'Pens'}
+                        {key === 'shots' && 'Shots'}
+                        {key === 'likes' && 'Likes'}
+                        {key === 'karma' && 'Karma'}
+                        {key === 'playlists' && 'Playlists'}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="card-footer">
+                  <button className="card-btn">
+                    <i className="fas fa-external-link-alt"></i>
+                    Visit
+                  </button>
+                </div>
+                
+                <div className="card-hover">
+                  <i className="fas fa-external-link-alt"></i>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
 
-          <div className="contact-item">
-            <div className="contact-content">
-              <i className="fas fa-phone"></i>
-              <div className="contact-text">
-                <div className="contact-main phone-number">{userData.phone}</div>
-                <div className="contact-sub phone-sub">{t.phoneSub}</div>
+        {/* Contact Section */}
+        <section className="contact-section">
+          <div className="contact-grid">
+            <div className="contact-card">
+              <div className="contact-icon email">
+                <i className="fas fa-envelope"></i>
+              </div>
+              <div className="contact-content">
+                <h3>{t.emailSub}</h3>
+                <p>{userData.email}</p>
+                <button className="contact-btn" onClick={sendEmail}>
+                  <i className="fas fa-paper-plane"></i>
+                  {t.emailBtn}
+                </button>
               </div>
             </div>
-            <div className="contact-buttons">
-              <button className="contact-btn call" onClick={makeCall}>
+            
+            <div className="contact-card">
+              <div className="contact-icon phone">
                 <i className="fas fa-phone"></i>
-                <span className="call-btn-text">{t.callBtn}</span>
-              </button>
-            </div>
-          </div>
-
-          <div className="contact-item">
-            <div className="contact-content">
-              <i className="fas fa-map-marker-alt"></i>
-              <div className="contact-text">
-                <div className="contact-main location-main">{t.locationMain}</div>
-                <div className="contact-sub location-sub">{t.locationSub}</div>
+              </div>
+              <div className="contact-content">
+                <h3>{t.phoneSub}</h3>
+                <p>{userData.phone}</p>
+                <button className="contact-btn" onClick={makeCall}>
+                  <i className="fas fa-phone-alt"></i>
+                  {t.callBtn}
+                </button>
               </div>
             </div>
-            <div className="contact-buttons">
-              <button className="contact-btn map" onClick={showLocation}>
-                <i className="fas fa-map-marked-alt"></i>
-                <span className="map-btn-text">{t.mapBtn}</span>
-              </button>
+            
+            <div className="contact-card">
+              <div className="contact-icon location">
+                <i className="fas fa-map-marker-alt"></i>
+              </div>
+              <div className="contact-content">
+                <h3>{t.locationSub}</h3>
+                <p>{t.locationMain}</p>
+                <button className="contact-btn" onClick={showLocation}>
+                  <i className="fas fa-map-marked-alt"></i>
+                  {t.mapBtn}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* Contact Button */}
-        <div className="contact-button-container">
-          <button className="contact-main-btn" onClick={() => setShowModal(true)}>
-            <i className="fas fa-phone-alt"></i>
-            <span className="contact-btn-text">{t.contactBtn}</span>
-          </button>
-        </div>
+        {/* Footer */}
+        <footer className="footer">
+          <p className="copyright">
+            © {new Date().getFullYear()} Azizjon Norimboyev. All rights reserved.
+          </p>
+          <p className="footer-text">
+            Made with <i className="fas fa-heart"></i> and <i className="fas fa-code"></i>
+          </p>
+        </footer>
       </div>
 
       {/* Contact Modal */}
       {showModal && (
-        <div className="modal-overlay active" onClick={() => setShowModal(false)}>
+        <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2 className="modal-title">{t.modalTitle}</h2>
+              <h2>
+                <i className="fas fa-paper-plane"></i>
+                {t.modalTitle}
+              </h2>
               <button className="modal-close" onClick={() => setShowModal(false)}>
-                &times;
+                <i className="fas fa-times"></i>
               </button>
             </div>
-            <div className="modal-body">
-              <form className="contact-form" onSubmit={handleSubmit}>
-                <div className="form-group">
-                  <label htmlFor="name" className="form-label">
-                    <i className="fas fa-user"></i>
-                    <span>{t.nameLabel}</span>
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    className="form-input"
-                    placeholder={t.namePlaceholder}
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="email" className="form-label">
-                    <i className="fas fa-envelope"></i>
-                    <span>{t.emailLabel}</span>
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    className="form-input"
-                    placeholder={t.emailPlaceholder}
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="subject" className="form-label">
-                    <i className="fas fa-tag"></i>
-                    <span>{t.subjectLabel}</span>
-                  </label>
-                  <input
-                    type="text"
-                    id="subject"
-                    className="form-input"
-                    placeholder={t.subjectPlaceholder}
-                    value={formData.subject}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label htmlFor="message" className="form-label">
-                    <i className="fas fa-comment"></i>
-                    <span>{t.messageLabel}</span>
-                  </label>
-                  <textarea
-                    id="message"
-                    className="form-textarea"
-                    placeholder={t.messagePlaceholder}
-                    value={formData.message}
-                    onChange={handleInputChange}
-                    required
-                  ></textarea>
-                </div>
-                <button type="submit" className="form-submit">
-                  {t.submitBtn}
-                </button>
-              </form>
-            </div>
+            
+            <form className="modal-form" onSubmit={handleSubmit}>
+              <div className="form-group">
+                <label htmlFor="name">
+                  <i className="fas fa-user"></i>
+                  {t.nameLabel}
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  placeholder={t.namePlaceholder}
+                  required
+                />
+              </div>
+              
+              <div className="form-group">
+                <label htmlFor="email">
+                  <i className="fas fa-envelope"></i>
+                  {t.emailLabel}
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  placeholder={t.emailPlaceholder}
+                  required
+                />
+              </div>
+              
+              <div className="form-group">
+                <label htmlFor="subject">
+                  <i className="fas fa-tag"></i>
+                  {t.subjectLabel}
+                </label>
+                <input
+                  type="text"
+                  id="subject"
+                  placeholder={t.subjectPlaceholder}
+                  required
+                />
+              </div>
+              
+              <div className="form-group">
+                <label htmlFor="message">
+                  <i className="fas fa-comment"></i>
+                  {t.messageLabel}
+                </label>
+                <textarea
+                  id="message"
+                  placeholder={t.messagePlaceholder}
+                  required
+                ></textarea>
+              </div>
+              
+              <button type="submit" className="submit-btn">
+                <i className="fas fa-paper-plane"></i>
+                {t.submitBtn}
+              </button>
+            </form>
           </div>
         </div>
       )}
@@ -477,7 +827,8 @@ function App() {
       {/* Notification */}
       {notification && (
         <div className={`notification ${notification.type}`}>
-          {notification.message}
+          <i className={`fas ${notification.type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}`}></i>
+          <span>{notification.message}</span>
         </div>
       )}
     </div>
