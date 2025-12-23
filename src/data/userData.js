@@ -8,6 +8,7 @@ const userData = {
 	links: {
 		github: "https://github.com/NorimboyevAzizjon",
 		linkedin: "https://www.linkedin.com/in/azizjon-norimboyev-dev",
+		x: "https://x.com/norimboyev31690",
 		telegram: "https://t.me/AzizjonNorimboyev",
 		instagram: "https://instagram.com/azizjondev_",
 		facebook: "https://facebook.com/azizjondev_",
